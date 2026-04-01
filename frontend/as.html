@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Smart Canteen</title>
+</head>
+
+<body>
+
+    <h1>🍽 Smart Canteen Dashboard</h1>
+
+    <h2>People Detected: <span id="live-crowd-count">0</span></h2>
+    <h3>Average Wait Time: <span id="average-wait-time">--</span></h3>
+    <h3>Flow Intensity: <span id="flow-status">--</span></h3>
+
+    <div id="cart-drawer" class="fixed right-0 top-0 h-full w-64 bg-white shadow-2xl p-6 transition-transform translate-x-full">
+        <h3 class="text-xl font-bold mb-6">Your Tray</h3>
+
+        <!-- This is where the JS will inject your items -->
+        <ul id="cart-items" class="space-y-4 mb-8">
+            <li class="text-slate-400 italic">Your tray is empty</li>
+        </ul>
+
+        <div class="border-t pt-4">
+            <div class="flex justify-between font-bold">
+                <span>Total Items:</span>
+                <span id="cart-count">0</span>
+            </div>
+            <button onclick="checkout()" class="w-full mt-4 bg-primary text-white py-3 rounded-lg font-bold">
+            Place Order
+        </button>
+        </div>
+    </div>
+
+
+
+    <!-- Cart Sidebar (Drawer) -->
+    <div id="cart-drawer" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-[100] transition-transform translate-x-full duration-300 ease-in-out border-l border-outline-variant/20">
+        <div class="p-6 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-xl font-bold text-primary">Your Tray</h3>
+                <!-- Close Button -->
+                <button onclick="toggleCart()" class="p-2 hover:bg-surface-container rounded-full">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            </div>
+
+            <!-- Scrollable List of Items -->
+            <ul id="cart-items" class="flex-grow space-y-4 overflow-y-auto pr-2">
+                <li class="text-slate-400 italic text-center py-10">Your tray is empty</li>
+            </ul>
+
+            <!-- Checkout Section -->
+            <div class="pt-6 border-t border-outline-variant/10">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-bold text-on-surface">Total Items:</span>
+                    <span id="cart-count-drawer" class="font-black text-primary">0</span>
+                </div>
+                <button onclick="placeFinalOrder()" class="w-full py-4 bg-primary text-on-primary rounded-xl font-bold hover:shadow-lg active:scale-95 transition-all">
+                Checkout & Pay
+            </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backdrop (Dark background when cart is open) -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[90] hidden"></div>
+
+
+    <script>
+        async function updateDashboard() {
+            try {
+                const response = await fetch('http://localhost:5000/api/crowd/live');
+                const data = await response.json();
+
+                const count = data.count;
+
+                // Update count
+                document.querySelectorAll('#live-crowd-count').forEach(el => {
+                    el.innerText = count;
+                });
+
+                // Update wait time (example logic)
+                let waitTime;
+                if (count <= 5) waitTime = 2;
+                else if (count <= 15) waitTime = 5;
+                else if (count <= 30) waitTime = 10;
+                else waitTime = 15;
+
+                document.getElementById('average-wait-time').innerText = waitTime + " mins";
+
+                // Update flow intensity
+                let flowText, flowColor;
+                if (count <= 8) {
+                    flowText = "Low Traffic";
+                    flowColor = "green";
+                } else if (count <= 60) {
+                    flowText = "Medium Traffic";
+                    flowColor = "orange";
+                } else {
+                    flowText = "High Traffic";
+                    flowColor = "red";
+                }
+
+                const flowEl = document.getElementById('flow-status');
+                flowEl.innerText = flowText;
+                flowEl.style.color = flowColor;
+
+                console.log("Dashboard Updated:", count);
+
+            } catch (error) {
+                console.error("Backend not running yet", error);
+            }
+        }
+
+        // Run immediately
+        updateDashboard();
+
+        // Repeat every 2 seconds
+        setInterval(updateDashboard, 2000);
+
+        // This function 'asks' the backend for the live crowd count 
+        async function refreshDashboard() {
+            try { // 1. Call the backend 
+                const response = await fetch('http://localhost:5000/api/crowd/live');
+                const data = await response.json();
+                // 2. Update the number on your screen 
+                // Make sure your HTML has an element with 
+                id = "live-crowd-count"
+                document.getElementById('live-crowd-count').innerText = data.count;
+                // 3. Update the Wait Time (2 mins per person) 
+                document.getElementById('average-wait-time').innerText = (data.count * 2) + " Mins";
+            } catch (error) {
+                console.log("Could not connect to backend yet...");
+            }
+        } // Run this every 3 seconds to keep it 'Live' 
+        setInterval(refreshDashboard, 3000);
+
+
+
+
+        // 1. Storage
+        const cart = [];
+
+        // 2. Add Item Function
+        function placeOrder(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if (existing) existing.quantity++;
+            else cart.push({
+                name,
+                price,
+                quantity: 1
+            });
+
+            updateCartUI(); // Instant update
+        }
+
+
+        function updateCartUI() {
+            const list = document.getElementById('cart-items');
+            const badge = document.getElementById('cart-count-badge'); // Your top icon badge
+            const trayBadge = document.getElementById('cart-count'); // Your yellow box/tray count
+
+            // 1. Clear the old list first
+            if (list) list.innerHTML = '';
+
+            let totalQuantity = 0;
+            let totalPrice = 0;
+
+            // 2. Loop through the cart and calculate
+            cart.forEach(item => {
+                // Draw the item in the list
+                if (list) {
+                    const li = document.createElement('li');
+                    li.className = "flex justify-between p-2 border-b text-sm bg-white rounded-lg mb-2";
+                    li.innerHTML = `
+                <div class="flex flex-col">
+                    <span class="font-bold">${item.name}</span>
+                    <span class="text-xs text-slate-500">$${item.price.toFixed(2)} x ${item.quantity}</span>
+                </div>
+                <span class="font-black text-primary">$${(item.price * item.quantity).toFixed(2)}</span>
+            `;
+                    list.appendChild(li);
+                }
+
+                // 🔥 THE MAGIC CALCULATION
+                totalQuantity += item.quantity;
+                totalPrice += (item.price * item.quantity);
+            });
+
+            // 3. ✅ UPDATE ALL BADGES WITH THE REAL TOTAL
+            if (badge) badge.innerText = totalQuantity;
+            if (trayBadge) trayBadge.innerText = totalQuantity;
+
+            // Update total price if you have an element for it
+            const totalEl = document.getElementById('cart-total');
+            if (totalEl) totalEl.innerText = "$" + totalPrice.toFixed(2);
+
+            console.log("Cart Updated! Total Qty:", totalQuantity);
+        }
+
+
+
+        function updateCartUI() {
+            // ... loop and math logic here ...
+
+            // 🔥 THE UPDATE
+            document.getElementById('cart-count').innerText = totalQuantity;
+
+            // If you have another badge on the icon:
+            const iconBadge = document.getElementById('cart-count-badge');
+            if (iconBadge) iconBadge.innerText = totalQuantity;
+        }
+
+
+
+
+        // 4. THE GENERATOR: Create Student/Order ID
+        function generateID() {
+            // Generates a random 4-digit ID (e.g., STU-4821)
+            return "STU-" + Math.floor(1000 + Math.random() * 9000);
+        }
+
+        // 5. THE CHECKOUT: The final action
+        async function placeFinalOrder() {
+            if (cart.length === 0) return alert("Your tray is empty!");
+
+            const studentID = generateID();
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Prepare the data package
+            const orderPackage = {
+                id: studentID,
+                items: cart,
+                total: totalAmount,
+                time: new Date().toLocaleTimeString()
+            };
+
+            // 🔥 THE BRIDGE: Send to backend
+            try {
+                const response = await fetch('http://localhost:5000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderPackage)
+                });
+
+                if (response.ok) {
+                    alert("Success! Your Student ID is: " + studentID);
+                    cart.length = 0; // Clear cart
+                    updateCartUI();
+                    toggleCart(); // Close drawer
+                }
+            } catch (e) {
+                alert("Backend not running! Start server.js first.");
+            }
+        }
+
+        function checkAdminAccess() {
+            // 1. User enter panna PIN-a edukkurom
+            const enteredPIN = document.getElementById('admin-password-input').value;
+
+            // 2. Namma secret PIN
+            const secretPIN = "1234";
+
+            // 3. Comparison
+            if (enteredPIN === secretPIN) {
+                alert("Login Success! Redirecting to Manager Dashboard...");
+
+                // 🔥 THE KEY: This opens your admin.html file
+                // Make sure 'admin.html' is in the same folder as index.html
+                window.location.href = "admin.html";
+
+            } else {
+                alert("Wrong PIN! Access Denied.");
+            }
+        }
+
+        function checkAdminAccess() {
+            // 1. User enter panna PIN-a edukkurom
+            const enteredPIN = document.getElementById('admin-password-input').value;
+
+            // 2. Namma secret PIN
+            const secretPIN = "1234";
+
+            // 3. Comparison
+            if (enteredPIN === secretPIN) {
+                alert("Login Success! Redirecting to Manager Dashboard...");
+
+                // 🔥 THE KEY: This opens your admin.html file
+                // Make sure 'admin.html' is in the same folder as index.html
+                window.location.href = "admin.html";
+
+            } else {
+                alert("Wrong PIN! Access Denied.");
+            }
+        }
+
+        async function placeFinalOrder() {
+            const orderID = "ORD-" + Math.floor(Math.random() * 9000); // 👈 ID generate panrom
+
+            const orderData = {
+                id: orderID, // 👈 ID-ah package kulla vaikkurom
+                items: cart,
+                total: totalAmount
+            };
+
+            // Sending to Backend
+            await fetch('http://localhost:5000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData) // 👈 Package-ah anuppurom
+            });
+        }
+    </script>
+
+</body>
+
+</html>

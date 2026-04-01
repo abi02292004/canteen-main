@@ -1,322 +1,1630 @@
 <!DOCTYPE html>
-<html>
+
+<html class="light" lang="en">
 
 <head>
-    <title>Smart Canteen</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Smart Canteen | Fluid Architect</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-background": "#191c1e",
+                        "background": "#f7f9fb",
+                        "outline": "#70787d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#8dd0e9",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#7af1fc",
+                        "on-secondary-fixed-variant": "#004f54",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#8dd0e9",
+                        "on-secondary-fixed": "#002022",
+                        "tertiary": "#5d3300",
+                        "primary-container": "#005c72",
+                        "on-tertiary-container": "#febb7d",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#794915",
+                        "on-primary-fixed": "#001f28",
+                        "surface-container-highest": "#e0e3e5",
+                        "outline-variant": "#bfc8cc",
+                        "on-tertiary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary-fixed": "#7df4ff",
+                        "on-surface-variant": "#3f484c",
+                        "on-secondary-container": "#006e75",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f2f4f6",
+                        "on-surface": "#191c1e",
+                        "surface-dim": "#d8dadc",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed": "#2d1600",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed-variant": "#004e61",
+                        "tertiary-fixed-dim": "#fcb97b",
+                        "surface-variant": "#e0e3e5",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdcc0",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-fixed-variant": "#693c07",
+                        "primary-fixed": "#b7eaff",
+                        "surface-tint": "#18667d",
+                        "on-primary-container": "#8fd2ec",
+                        "secondary": "#006970",
+                        "primary": "#004354",
+                        "secondary-fixed-dim": "#5dd8e2"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        @keyframes scan {
+            0% {
+                top: 0%;
+            }
+            100% {
+                top: 100%;
+            }
+        }
+        
+        .scan-line {
+            animation: scan 2s linear infinite;
+        }
+    </style>
 </head>
 
-<body>
+<body class="bg-surface text-on-surface" data-mode="connect">
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-8">
+                <span class="text-xl font-bold bg-gradient-to-br from-cyan-900 to-cyan-700 bg-clip-text text-transparent dark:from-cyan-100 dark:to-cyan-400">Smart Canteen</span>
+                <div class="hidden md:flex gap-6 items-center">
+                    <a class="text-cyan-700 dark:text-cyan-400 font-bold border-b-2 border-cyan-700 dark:border-cyan-400 pb-1 font-plus-jakarta text-sm tracking-tight" href="#">Dashboard</a>
+                    <a class="text-slate-500 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-200 transition-colors font-plus-jakarta text-sm font-medium tracking-tight" href="#menu">Menu</a>
+                    <a class="text-slate-500 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-200 transition-colors font-plus-jakarta text-sm font-medium tracking-tight" href="#tracking">Tracking</a>
+                    <a class="text-slate-500 dark:text-slate-400 hover:text-cyan-800 dark:hover:text-cyan-200 transition-colors font-plus-jakarta text-sm font-medium tracking-tight" href="#insights">Insights</a>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 mr-4">
+                    <button class="p-2 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full transition-all">
+<button onclick="goToMyOrder()" class="text-bold text-color-black">My Orders</button>
+                    </button>
+                    <button onclick="toggleCart()" id="cart-section" class="relative p-2 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-full transition-all">
 
-    <h1>🍽 Smart Canteen Dashboard</h1>
+    <span class="material-symbols-outlined">shopping_cart</span>
 
-    <h2>People Detected: <span id="live-crowd-count">0</span></h2>
-    <h3>Average Wait Time: <span id="average-wait-time">--</span></h3>
-    <h3>Flow Intensity: <span id="flow-status">--</span></h3>
+    <!-- The Badge -->
+    <span id="cart-count"
+    class="absolute top-0 right-0 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+    0
+    </span>
 
-    <div id="cart-drawer" class="fixed right-0 top-0 h-full w-64 bg-white shadow-2xl p-6 transition-transform translate-x-full">
-        <h3 class="text-xl font-bold mb-6">Your Tray</h3>
+</button>
 
-        <!-- This is where the JS will inject your items -->
-        <ul id="cart-items" class="space-y-4 mb-8">
-            <li class="text-slate-400 italic">Your tray is empty</li>
+                </div>
+                <!-- Example Login Button in Nav Bar -->
+                <button onclick="openStudentLogin()" class="flex flex-col items-center">
+    <span class="material-symbols-outlined">account_circle</span>
+    <span class="text-[8px] font-bold uppercase">Login</span>
+</button>
+            </div>
+        </div>
+        <div class="bg-slate-200/20 dark:bg-slate-800/20 h-[1px] w-full"></div>
+        <div id="cart-section" style="position: fixed; top: 80px; right: 20px; width: 250px; background: #fffbe6; padding: 15px; border: 2px solid #ffd700; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+            <h3 style="text-align:center; color:#d48806;">🛒 Your Cart</h3>
+            <ul id="cart-items" style="list-style:none; padding-left:0; max-height:300px; overflow-y:auto;"></ul>
+            <p>selected items <span></span></p>
+        </div>
+
+    </nav>
+    <div class="flex min-h-screen pt-20">
+        <!-- SideNavBar -->
+        <aside class="hidden lg:flex h-[calc(100vh-5rem)] w-64 fixed left-0 top-20 bg-slate-50 dark:bg-slate-950 flex-col p-4 gap-2">
+            <div class="p-4 mb-4">
+                <div class="flex items-center gap-3">
+
+
+                    <!-- Admin Profile Section in Header -->
+                    <div onclick="toggleAdminLogin(true)" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-all">
+                        <!-- The Image -->
+                        <div class="w-10 h-10 rounded-full bg-primary/10 overflow-hidden border border-outline-variant/20">
+                            <img src="https://img.freepik.com/premium-vector/night-silhouette-lonely-girl-with-rising-moon-vector-illustration_528239-217.jpg" alt="Admin" class="w-full h-full object-cover">
+                        </div>
+
+                        <!-- The Text -->
+                        <div>
+                            <p class="text-cyan-900 font-black text-sm">Admin Panel</p>
+                            <p class="text-slate-500 text-[10px] uppercase font-bold tracking-tighter">Manager Access</p>
+                        </div>
+                    </div>
+
+
+                    <!-- Admin Login Section (Hidden by Default) -->
+                    <section id="admin-login-view" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[200] flex items-center justify-center p-6">
+                        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-sm border border-outline-variant/10">
+                            <div class="flex flex-col items-center text-center mb-8">
+                                <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+                                    <span class="material-symbols-outlined text-primary text-3xl">admin_panel_settings</span>
+                                </div>
+                                <h2 class="text-2xl font-black text-on-surface tracking-tight">Manager Portal</h2>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Authorized Access Only</p>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Manager ID</label>
+                                    <input type="text" id="admin-id-input" placeholder="ADM-0000" class="w-full p-4 bg-slate-50 border border-outline-variant/20 rounded-2xl focus:ring-2 ring-primary outline-none mt-1 font-bold">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Security PIN</label>
+                                    <input type="password" id="admin-pin-input" maxlength="4" placeholder="••••" class="w-full p-4 bg-slate-50 border border-outline-variant/20 rounded-2xl focus:ring-2 ring-primary outline-none mt-1 text-xl tracking-[0.5em]">
+                                </div>
+
+                                <button onclick="handleAdminLogin()" class="w-full py-4 bg-primary text-on-primary rounded-2xl font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4">
+                Login to Dashboard
+            </button>
+
+                                <button onclick="toggleAdminLogin(false)" class="w-full py-2 text-slate-400 text-xs font-bold uppercase hover:text-primary transition-colors">
+                Cancel
+            </button>
+                            </div>
+                        </div>
+                    </section>
+
+
+                </div>
+            </div>
+            <nav class="flex flex-col gap-1 flex-grow">
+                <a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-900 text-cyan-700 dark:text-cyan-400 shadow-sm rounded-lg font-semibold transition-all" href="#">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Home</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:pl-6 hover:text-cyan-600 dark:hover:text-cyan-300 transition-all" href="#menu">
+                    <span class="material-symbols-outlined">restaurant_menu</span>
+                    <span>Pre-order</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:pl-6 hover:text-cyan-600 dark:hover:text-cyan-300 transition-all" href="#tracking">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span>History</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:pl-6 hover:text-cyan-600 dark:hover:text-cyan-300 transition-all" href="#insights">
+                    <span class="material-symbols-outlined">insights</span>
+                    <span>Analytics</span>
+                </a>
+                <a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:pl-6 hover:text-cyan-600 dark:hover:text-cyan-300 transition-all" href="#">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            <div class="mt-auto p-4 bg-primary-container/10 rounded-xl">
+                <p class="text-xs text-primary font-bold mb-2">PRO FEATURES</p>
+                <button class="w-full py-2 bg-primary text-on-primary rounded-lg text-sm font-bold hover:bg-primary-container transition-colors">
+                View Insights
+            </button>
+            </div>
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="flex-grow lg:ml-64 p-6 md:p-12 space-y-24">
+            <!-- Hero Section -->
+            <section class="relative overflow-hidden rounded-[2.5rem] bg-surface-container p-8 md:p-16">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-block px-4 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold mb-6 tracking-widest uppercase">The Fluid Architect</span>
+                    <h1 class="text-5xl md:text-7xl font-extrabold text-on-surface mb-6 leading-[1.1] tracking-tight">welcome u
+                        <div>all guys</div>
+                    </h1>
+                    <p class="text-on-surface-variant text-lg md:text-xl mb-10 max-w-lg leading-relaxed">
+                        Say goodbye to queues. Our AI-driven platform optimizes your meal timings, predicts crowd flow, and ensures the order is  ready exactly when you arrive.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-bold text-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        Pre-order Now
+                    </button>
+                        <button class="bg-surface-container-lowest text-on-surface px-8 py-4 rounded-xl font-bold text-lg border border-outline-variant/20 hover:bg-surface-container-high transition-all">
+                        Live Status
+                    </button>
+                    </div>
+                </div>
+                <div class="absolute top-0 right-0 w-1/2 h-full hidden md:block">
+                    <div class="relative h-full w-full">
+                        <img alt="Modern Canteen" class="h-full w-full object-cover rounded-l-[3rem] opacity-40 mix-blend-multiply" data-alt="high-end modern corporate canteen with minimalist furniture, clean architectural lines and soft natural lighting from large windows"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVSKd-V4PCBtbtXuKcHtSwMygPzSsZxl7MTHHsmvOuR7cGwFxL9d-r-7cXhLIyQjvAVmKtUGBd06EdXrRf0qCwVk2z-MIZoLtXBKF9k5PytXuObA-pCw91NYn3cr2UMc0oSb4Ah62PocTweObwRElgsGUVJ70t3KT4Lma3b5nV8DK02-uq2i9FGdg_fA431P4Ju573PPfdigsVfzabMhGjhepSTXL2jET3ZmuRtqDaye9uBgxDY2wyky_wm8wwCpb5wYZFs3QD-68i"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-r from-surface-container via-surface-container/20 to-transparent"></div>
+                    </div>
+                </div>
+            </section>
+            <!-- Live Dashboard -->
+            <section class="space-y-8" id="dashboard">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-6">
+                    <div>
+                        <p class="text-primary font-bold label-md uppercase tracking-widest mb-2">Live Status</p>
+                        <h2 class="text-4xl font-extrabold text-on-surface">Canteen Vitality</h2>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-surface-container-low px-6 py-3 rounded-xl flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                            <span class="font-bold text-on-surface">Live Analytics Active</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Occupancy Analytics -->
+                    <div class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="font-bold text-xl">Occupancy Analytics</h3>
+                            <div class="flex gap-2">
+                                <span class="px-3 py-1 bg-surface-container rounded-lg text-xs font-bold text-on-surface-variant">24H</span>
+                                <span class="px-3 py-1 bg-primary text-on-primary rounded-lg text-xs font-bold">1H</span>
+                            </div>
+                        </div>
+                        <div class="h-64 flex items-end justify-between gap-3">
+                            <div class="w-full bg-surface-container-low rounded-t-lg h-[40%] transition-all hover:bg-primary/20"></div>
+                            <div class="w-full bg-surface-container-low rounded-t-lg h-[55%] transition-all hover:bg-primary/20"></div>
+                            <div class="w-full bg-surface-container-low rounded-t-lg h-[35%] transition-all hover:bg-primary/20"></div>
+                            <div class="w-full bg-primary/80 rounded-t-lg h-[85%] transition-all hover:bg-primary"></div>
+                            <div class="w-full bg-surface-container-low rounded-t-lg h-[65%] transition-all hover:bg-primary/20"></div>
+                            <div class="w-full bg-surface-container-low rounded-t-lg h-[45%] transition-all hover:bg-primary/20"></div>
+                            <div class="w-full bg-surface-container-low rounded-t-lg h-[30%] transition-all hover:bg-primary/20"></div>
+                        </div>
+                        <div class="mt-8 pt-8 border-t border-outline-variant/10 flex justify-between">
+                            <div class="flex items-center gap-4">
+                                <span class="material-symbols-outlined text-tertiary">timer</span>
+                                <div>
+                                    <p class="text-xs text-on-surface-variant font-bold uppercase">Average Wait</p>
+                                    <p class="text-xl font-black text-on-surface" id="average-wait-time">0 mins</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="material-symbols-outlined text-secondary">groups</span>
+                                <div>
+                                    <p class="text-xs text-on-surface-variant font-bold uppercase">Current Capacity</p>
+                                    <p class="text-xl font-black text-on-surface" id="live-crowd-count">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Webcam Monitor Section -->
+                    <div class="bg-surface-container-lowest p-8 rounded-2xl shadow-sm border border-outline-variant/10 flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-xl">Webcam Monitor</h3>
+                            <span class="px-2 py-1 bg-error-container text-error text-[10px] font-bold rounded uppercase tracking-tighter">Live Feed</span>
+                        </div>
+                        <div class="relative flex-grow bg-black rounded-xl overflow-hidden aspect-video lg:aspect-auto">
+                            <img alt="Laptop Webcam Feed" class="w-full h-full object-cover opacity-60" data-alt="Pov of a laptop webcam looking out at a corporate dining hall, showing tables and people in soft focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHXG6_17hZ890vEPrN8vX90_G-q7vV_v124040958172049581720495817204958172049581720"
+                            />
+                            <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+                            <div class="absolute top-0 left-0 w-full h-[2px] bg-primary/60 scan-line"></div>
+                            <div class="absolute top-4 left-4 flex gap-2">
+                                <span class="px-2 py-1 bg-black/60 text-white text-[10px] font-mono rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]">laptop_chromebook</span> LAPTOP_WEBCAM_INTERNAL
+                                </span>
+                            </div>
+                            <div class="absolute bottom-4 right-4 text-white text-[10px] font-mono bg-black/60 px-2 py-1 rounded">
+                                REC ● <span id="camera-timestamp">--:--:--</span>
+                            </div>
+                            <!-- Detection boxes overlay -->
+                            <div class="absolute border-2 border-primary/50 top-[25%] left-[35%] w-16 h-24 rounded"></div>
+                            <div class="absolute border-2 border-primary/50 top-[45%] left-[55%] w-12 h-20 rounded"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <button class="bg-primary/90 text-on-primary px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-primary transition-all shadow-lg">
+<span class="material-symbols-outlined text-sm">videocam</span>
+                                Start Webcam
+                            </button>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-surface-container rounded-xl">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <p class="text-xs text-on-surface-variant font-bold uppercase">People Detected</p>
+                                    <p class="text-xl font-black text-on-surface" id="live-crowd-count">0</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-on-surface-variant font-bold uppercase">Flow Intensity</p>
+                                    <p class="text-sm font-bold text-secondary" id="flow-status">--</p>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-on-surface-variant/80 italic border-t border-outline-variant/10 pt-2">
+                                * System utilizes your laptop's camera to monitor local crowd density for live analytics updates.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-tertiary text-on-tertiary p-8 rounded-2xl flex items-start gap-6">
+                        <span class="material-symbols-outlined text-5xl">bolt</span>
+                        <div>
+                            <h4 class="text-2xl font-bold mb-2">Peak Hour Warning</h4>
+                            <p class="text-sm opacity-80 leading-relaxed">Rush expected in 15 mins. Based on live webcam monitoring, crowds are increasing at the main entrance. Pre-order now to skip the line.</p>
+                        </div>
+                    </div>
+                    <div class="bg-secondary-container text-on-secondary-container p-8 rounded-2xl flex items-start gap-6">
+                        <span class="material-symbols-outlined text-5xl">eco</span>
+                        <div>
+                            <h4 class="text-2xl font-bold mb-2">Eco-Save Status</h4>
+                            <p class="text-sm opacity-80 leading-relaxed">Today's pre-orders saved 4.2kg of potential food waste. Thank you for choosing sustainable dining!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Smart Menu Section -->
+            <section class="space-y-12" id="menu">
+                <div class="text-center max-w-2xl mx-auto">
+                    <h2 class="text-4xl font-extrabold mb-4">The Smart Menu</h2>
+                    <p class="text-on-surface-variant">Freshly prepared, locally sourced, and AI-optimized for your nutritional needs.</p>
+                </div>
+                <!-- Meals -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">restaurant</span> Daily Main Course
+                        </h3>
+                        <a class="text-primary font-bold text-sm hover:underline" href="#">View All</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Meal Card 1 -->
+                        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/10 group">
+                            <div class="h-48 relative overflow-hidden">
+                                <img alt="Veg Fried Rice" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="delicious plate of vegetable fried rice with colorful peas, carrots, and spring onions, soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjlTYR3fC90jb8qvy8RWMjIhahsIc2CZqnTQLevpKyo-xIY9fbzfWnKVEMS3ad51pTAABIc9_5wcmMRFRXAJ0V9F-bKNtXIOMb4IxaTKswUddutlPYGLYLiAoGOy-fD0zXYAx1zUFRMJBYRVTaBEIFX0qTkErJd63lF1Yuwn6TWVyhY6d9ZSIwT7beuO7R9BZqVO6gikM9MFQqdNzHMhf_8hzm-8tTC48wGkqCnUEku7DY6bc66GP_jN7hy464ooEQa_dda3KZFKmP"
+                                />
+                                <span class="absolute top-3 right-3 px-3 py-1 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-black uppercase rounded-full">Vegan</span>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="font-bold text-lg mb-1">Veg Fried Rice</h4>
+                                <p class="text-on-surface-variant text-sm mb-4">popular recipe</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-primary font-black">$99.0</span>
+                                    <button onclick="placeOrder('Veg Fried Rice', 99.0)" class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Meal Card 2 -->
+                        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/10 group">
+                            <div class="h-48 relative overflow-hidden">
+                                <img alt="Chicken Fried Rice" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="steaming hot chicken fried rice with soy sauce glaze and toasted sesame seeds, professional food photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8WRJtEaGX3LkkWVdYNRHr4R-kUm3BLqGjLb98eCfVetgzHgS1pU4Dy0gftKP1TbtcthHhKzOzG89TFr-w8ximYRylyK06zUl-ho4aJxm82z8FyVDVSW92FCWaa2YAWx-v2TwO93_5Wpm_1-W0uF-h2mSDtPlf6gbjWoyNpu1EkmgOGxUeSPb51tMYxqBthrZWSvzjaGTOIeh4Mu5A6HpsmdIx_JfZ9KWVUJKeZgtLiy0TUkoPCvh4dA_KJurlezzoTGewTJVkPrLq"
+                                />
+                                <span class="absolute top-3 right-3 px-3 py-1 bg-primary text-on-primary text-[10px] font-black uppercase rounded-full">Popular</span>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="font-bold text-lg mb-1">Chicken Fried Rice</h4>
+                                <p class="text-on-surface-variant text-sm mb-4">tossed chicken with eggs.</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-primary font-black">$99.0</span>
+                                    <button onclick="placeOrder('Chicken Fried Rice', 99.0)" class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Meal Card 3 -->
+                        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/10 group">
+                            <div class="h-48 relative overflow-hidden">
+                                <img alt="Royal Biriyani" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="royal hyderabadi biryani with golden rice, fried onions and fresh coriander garnish, warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ3cXHCMPDX893c_Z-OfMVmQFt16pMRJpR90VsOO7WxnjKC5Y5OtgIPAWIQI24MXBTlJPTiXq6ewfZufvxc5-etBwe3Fn2CcdfXV9NJdKYyCW97X0MCcZBBASvulpGKpvhZTnnhG9dNJXltiUSqV6jybviXA4eP0PPLAUkRt0YLyy7A2kvkM9CTZGatVZ1VC3yxAQbU54_1vhlBBCMVVdqBxj4G7C8twNu3CW6Y5r4DtFH8KQ60Wh97teVze4oFwa3lsM7gRloDnWg"
+                                />
+                                <span class="absolute top-3 right-3 px-3 py-1 bg-tertiary text-on-tertiary text-[10px] font-black uppercase rounded-full">Chef Special</span>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="font-bold text-lg mb-1">chicken Biriyani</h4>
+                                <p class="text-on-surface-variant text-sm mb-4">Infused rice with slow-cooked lamb.</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-primary font-black">$110.00</span>
+                                    <button onclick="placeOrder('chicken Biriyani', 110.00)" class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Meal Card 4 -->
+                        <div class="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/10 group">
+                            <div class="h-48 relative overflow-hidden">
+                                <img alt="Spicy Hakka Noodles" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="spicy hakka noodles with vibrant bell peppers and chili oil glistening on the surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7kj7jv3C-kL0UrGtHjRcnCCiDvEeAPpw2rncDSVgJV-digt7J8bn1kDHCxcCH7eDC-mo29hxB-EJYJ5Cn0kz_cneq1gDu1gUT5Cc3pIz1XN-AkqYsj6Zih4m8b2_lQph4DyenTbv74lyltjI52Jp7GldooOsOSI5ybLdhbss3Xj7xHIlkGThdKgj5I0agqxYc-Eg6GTFugdV4v95FWUaPtYGvJ4dBm4LJQks_Q55oWLJdQ_xP-FCoX6_98UpCsHAHJhacjG84mFez"
+                                />
+                                <span class="absolute top-3 right-3 px-3 py-1 bg-error-container text-on-error-container text-[10px] font-black uppercase rounded-full">Spicy</span>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="font-bold text-lg mb-1">Spicy Noodles</h4>
+                                <p class="text-on-surface-variant text-sm mb-4">style hand-pulled noodles.</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-primary font-black">$99.0</span>
+                                    <button onclick="placeOrder('Spicy Noodles', 99.0)" class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Drinks -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">local_cafe</span> Artisan Beverages
+                        </h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <!-- Drink Card 1 -->
+                        <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+                            <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                                <img alt="Artisan Coffee" class="w-full h-full object-cover" data-alt="perfectly poured latte art in a white ceramic cup on a dark textured surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3cd64YdcGZKR9rpQ5-LzoXckidNWHfYoVy5NWz0vZcnY3A_3UqKUPu4SfhO7s0ihiN1YhSOuEtgOZ4IOihbQgzfhoGCsvZ_LBw-yxgURTWMWYwItoiVLUG1GCyCcwQaJz6ZrG96LJhl5ooPrafjffK0bmEWRDv1r_W99ZMMMIjkTbUIU2riSYFMAfNkXOFtZEdHvcldZY1CzXdle5bRSpBhOPhYWlhP5BDvYjAaERP7He4bQKoQKQiaV550Bx_p9aqK5xUB5gF0Xa"
+                                />
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm">Coffee</h5>
+                                <p class="text-primary text-xs font-black">$15.0</p>
+                            </div>
+                        </div>
+                        <!-- Drink Card 2 -->
+                        <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+                            <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                                <img alt="Masala Tea" class="w-full h-full object-cover" data-alt="traditional indian masala tea in a clear glass cup with spices in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw6DacGiYul7sTtKFDPRWTmei3IIkfsgOzsYorGWwA5oh-6VRth_wWUTAJ83c59DLgnRmxqjcoqNwVX1nmiwtWz_8LSWjPMmDZFNtJy887UNLn51RyKFyQMYD_k8cHS7vVrEp_VUu6zIhuyZ8aLSRUGV9cXOI3LMuNKPOK-ZT3N5nTJ4FZih06rzt8gBNRRuF9XYjhsL8nW0mizlrV9Hx7mfoR531iw9E1fP9-dMPZnFmXeustjvosV2zEuCGKPzuegdvpE53D-_oi"
+                                />
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm">Tea</h5>
+                                <p class="text-primary text-xs font-black">$12.0</p>
+                            </div>
+                        </div>
+                        <!-- Drink Card 3 -->
+                        <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+                            <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                                <img alt="Fresh Milk" class="w-full h-full object-cover" data-alt="glass bottle of fresh cold milk on a rustic wooden table with condensation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5gCPvszuWNEA81xfplEQpgvveVzsxhzFSOKafxL_hRsazhkhmiPPFC6Qb5x-a8N9PufeMOMVi02K66eOQCazjtjUjvGyklxxZpd26U9XZYVG4dSz2EHBLFFdvLCTPza44sc5tveFqmnYJNbl8_gZQ_TmECfU-7smyMXMMgLuIsjF4Sl1um_dFg847Fkyj-ZI-uxM1BuJ72xGfyaIfXV30GEqYu_jEuRKFdrMTXcMJYU9vcL88ig7nUnMYtl13QgbhA4XTy9cr2E9j"
+                                />
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm">Milk</h5>
+                                <p class="text-primary text-xs font-black">$10.0</p>
+                            </div>
+                        </div>
+                        <!-- Drink Card 4 -->
+                        <div class="bg-surface-container rounded-2xl p-4 flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent hover:border-outline-variant/20">
+                            <div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                                <img alt="Orange Juice" class="w-full h-full object-cover" data-alt="freshly squeezed orange juice in a tall glass with a straw and orange slice garnish" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZHjCUhVAvUGckjYRapPdncpKgy7jEojpfJ4G3_qJCcGvZ9iGilEvu39TYz0bROyNZPtrcPbbsWd5fhUgy-1jr3FYCTvsVRp6Mat6E2pmj65vnrrCz4K9fySzuqAxGbsk8TxuPDRgImr2SrqqcGVVivRJUj1PiTwqn9LdOs0RDCAYNkLdoc29Jn6Y3Q68R-m2l_gBAyWDQ9k9vuQwCTG8x-kPWB-3vEukO_5kPjKrt6KYjtjOSYNNBEgco5XhQNzgOr27KhhVwG-Ue"
+                                />
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-sm">Orange Juice</h5>
+                                <p class="text-primary text-xs font-black">$20.0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+
+
+            <!-- Admin Insights Section -->
+            <section class="space-y-10" id="insights">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-3xl font-extrabold">Admin Intelligence</h2>
+                        <p class="text-on-surface-variant">Real-time inventory and AI-driven optimization</p>
+                    </div>
+                    <button class="flex items-center gap-2 px-6 py-3 bg-inverse-surface text-inverse-on-surface rounded-xl font-bold">
+<span class="material-symbols-outlined text-sm">download</span>
+                    Export Report
+                </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- AI Optimization Tip -->
+                    <div class="bg-primary text-on-primary p-8 rounded-3xl relative overflow-hidden">
+                        <div class="relative z-10">
+                            <div class="bg-white/20 w-12 h-12 rounded-full flex items-center justify-center mb-6">
+                                <span class="material-symbols-outlined">psychology</span>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4">AI Optimization Tip</h3>
+                            <p class="text-lg opacity-90 leading-relaxed mb-8">
+                                "Based on historical data for Friday afternoons, we recommend increasing Hakka Noodles preparation by 15% and launching a 'Beverage Combo' flash deal between 2:00 PM and 3:00 PM to maximize off-peak revenue."
+                            </p>
+                            <button class="px-6 py-2 bg-on-primary text-primary rounded-lg font-bold text-sm">Apply Optimization</button>
+                        </div>
+                        <span class="absolute -right-10 -bottom-10 material-symbols-outlined text-[15rem] opacity-5">auto_awesome</span>
+                    </div>
+                    <!-- Inventory Control -->
+                    <div class="bg-surface-container-high p-8 rounded-3xl">
+                        <h3 class="font-bold text-xl mb-6">Inventory Health</h3>
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm font-bold">
+                                    <span>Basmati Rice Stock</span>
+                                    <span>84%</span>
+                                </div>
+                                <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary w-[84%]"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm font-bold">
+                                    <span>Organic Chicken Supply</span>
+                                    <span>32%</span>
+                                </div>
+                                <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                                    <div class="h-full bg-error w-[32%]"></div>
+                                </div>
+                                <p class="text-[10px] text-error font-bold uppercase tracking-widest">Low Stock Alert: Auto-order triggered</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm font-bold">
+                                    <span>Fresh Vegetable Mix</span>
+                                    <span>60%</span>
+                                </div>
+                                <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+                                    <div class="h-full bg-secondary w-[60%]"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Footer -->
+    <footer class="w-full py-12 px-6 border-t border-slate-200/50 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-950">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col gap-2 items-center md:items-start">
+                <span class="font-plus-jakarta font-bold text-slate-900 dark:text-slate-100 text-lg">Smart Canteen </span>
+                <p class="font-manrope text-xs text-slate-500 dark:text-slate-400">© 2026 AS Smart Canteen . All rights reserved.</p>
+            </div>
+            <div class="flex gap-8">
+                <a class="text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors font-manrope text-xs" href="#">Privacy Policy</a>
+                <a class="text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors font-manrope text-xs" href="#">Terms of Service</a>
+                <a class="text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors font-manrope text-xs" href="#">Support</a>
+                <a class="text-slate-400 dark:text-slate-500 hover:text-cyan-600 dark:hover:text-cyan-300 transition-colors font-manrope text-xs" href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Overlay -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40">
+    </div>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer-count" class="fixed top-0 right-0 w-80 h-full bg-white transform translate-x-full transition-transform duration-300 z-50">
+
+
+        <h2 class="p-4 font-bold text-lg">Cart</h2>
+
+        <ul id="cart-items" class="space-y-4">
+            <!-- JavaScript moolama items inga dhaan varum -->
+            <li class="text-slate-400 italic text-center">Your tray is empty</li>
         </ul>
 
-        <div class="border-t pt-4">
-            <div class="flex justify-between font-bold">
-                <span>Total Items:</span>
-                <span id="cart-count">0</span>
-            </div>
-            <button onclick="checkout()" class="w-full mt-4 bg-primary text-white py-3 rounded-lg font-bold">
-            Place Order
-        </button>
-        </div>
     </div>
 
+    <div id="order-view" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:white;
+    z-index:9999;
+    padding:20px;
+">
+        <div id="order-view" style="
+    max-width:400px;
+    margin:30px auto;
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+">
 
+            <h2 style="text-align:center; color:#1e293b; margin-bottom:15px;">
+                My Order
+            </h2>
 
-    <!-- Cart Sidebar (Drawer) -->
-    <div id="cart-drawer" class="fixed right-0 top-0 h-full w-80 bg-white shadow-2xl z-[100] transition-transform translate-x-full duration-300 ease-in-out border-l border-outline-variant/20">
-        <div class="p-6 h-full flex flex-col">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-xl font-bold text-primary">Your Tray</h3>
-                <!-- Close Button -->
-                <button onclick="toggleCart()" class="p-2 hover:bg-surface-container rounded-full">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            </div>
-
-            <!-- Scrollable List of Items -->
-            <ul id="cart-items" class="flex-grow space-y-4 overflow-y-auto pr-2">
-                <li class="text-slate-400 italic text-center py-10">Your tray is empty</li>
+            <ul id="order-list" style="
+    list-style:none;
+    padding:0;
+    margin:0;
+">
             </ul>
 
-            <!-- Checkout Section -->
-            <div class="pt-6 border-t border-outline-variant/10">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="font-bold text-on-surface">Total Items:</span>
-                    <span id="cart-count-drawer" class="font-black text-primary">0</span>
-                </div>
-                <button onclick="placeFinalOrder()" class="w-full py-4 bg-primary text-on-primary rounded-xl font-bold hover:shadow-lg active:scale-95 transition-all">
-                Checkout & Pay
-            </button>
+            <h3 id="total-price" style="
+    color:#0f172a;
+    font-weight:bold;
+    text-align:right;
+    margin-top:10px;
+">
+            </h3>
+
+            <h3 id="order-total" style="
+    color:#16a34a;
+    font-size:20px;
+    text-align:right;
+    margin-bottom:10px;
+">
+            </h3>
+
+            <button onclick="placeFinalOrder()" style="
+    width:100%;
+    padding:12px;
+    background:linear-gradient(to right, #22c55e, #16a34a);
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
+">
+Place Order
+</button>
+
+            <h3 id="order-id" style="
+    color:#22c55e;
+    text-align:center;
+    margin-top:12px;
+    font-weight:bold;
+">
+            </h3>
+
+            <button onclick="backToMenu()" style="
+    width:100%;
+    padding:12px;
+    background:#f1f5f9;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    cursor:pointer;
+    margin-top:10px;
+">
+⬅ Back
+</button>
+
+            <!-- Inside your 'order-view' div -->
+
+            <!-- 1. The Trigger Button -->
+            <div style="margin-top: 25px; border-top: 1px dashed #cbd5e1; padding-top: 15px; text-align: center;">
+                <p style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 800; margin-bottom: 10px;">Your Recent History</p>
+                <button onclick="fetchIntegratedHistory()" style="width: 100%; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; color: #004354; border-radius: 12px; font-weight: bold; cursor: pointer;">
+        📜 View Past Orders
+    </button>
             </div>
+
+            <!-- 2. The History List Container (Starts Empty) -->
+            <ul id="integrated-history-list" style="list-style: none; padding: 0; margin-top: 15px; max-height: 200px; overflow-y: auto;">
+                <!-- Orders will appear here -->
+            </ul>
+
+
         </div>
-    </div>
 
-    <!-- Backdrop (Dark background when cart is open) -->
-    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[90] hidden"></div>
+        <!--admin kaana hidden login pages-->
+
+        <!-- Manager Control Center Section -->
+        <section id="admin-dashboard-section" class="hidden p-6 space-y-8" style="background:#fff; min-height:100vh;">
+            <h2 style="font-size:24px; font-weight:900; margin-bottom:20px;">Manager Control Center</h2>
+
+            <!-- The Excel Style Table -->
+            <div style="overflow-x:auto; border:1px solid #eee; border-radius:15px;">
+                <table style="width:100%; text-align:left; border-collapse:collapse;">
+                    <thead style="background:#f8fafc; font-size:10px; text-transform:uppercase; color:#94a3b8;">
+                        <tr>
+                            <th style="padding:15px;">Order ID</th>
+                            <th style="padding:15px;">Student ID</th>
+                            <th style="padding:15px;">Items</th>
+                            <th style="padding:15px;">Total</th>
+                            <th style="padding:15px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-order-rows">
+                        <!-- JavaScript will fill this part -->
+                        <!-- Student orders will appear here automatically -->
+                        <tr>
+                            <td colspan="4" style="text-align:center; padding:20px;">Waiting for orders...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Back Button to return to Menu -->
+            <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; background:#f1f5f9; border-radius:10px; font-weight:bold;">
+        ⬅ Back to Student Menu
+    </button>
+        </section>
 
 
-    <script>
-        async function updateDashboard() {
-            try {
-                const response = await fetch('http://localhost:5000/api/crowd/live');
-                const data = await response.json();
 
-                const count = data.count;
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
 
-                // Update count
-                document.querySelectorAll('#live-crowd-count').forEach(el => {
-                    el.innerText = count;
-                });
+                const crowdCountEl = document.querySelectorAll('#live-crowd-count');
+                const waitTimeEl = document.getElementById('average-wait-time');
+                const timestampEl = document.getElementById('camera-timestamp');
 
-                // Update wait time (example logic)
-                let waitTime;
-                if (count <= 5) waitTime = 2;
-                else if (count <= 15) waitTime = 5;
-                else if (count <= 30) waitTime = 10;
-                else waitTime = 15;
+                async function updateLiveStats() {
+                    try {
+                        // 🔥 Get real data from backend
+                        const response = await fetch('http://localhost:5000/api/crowd/live');
+                        const data = await response.json();
 
-                document.getElementById('average-wait-time').innerText = waitTime + " mins";
+                        const currentCount = data.count;
 
-                // Update flow intensity
-                let flowText, flowColor;
-                if (count <= 8) {
-                    flowText = "Low Traffic";
-                    flowColor = "green";
-                } else if (count <= 60) {
-                    flowText = "Medium Traffic";
-                    flowColor = "orange";
-                } else {
-                    flowText = "High Traffic";
-                    flowColor = "red";
+
+
+                        // ✅ Update crowd count
+                        crowdCountEl.innerText = currentCount;
+
+                        // ✅ Update all same IDs
+                        crowdCountEl.forEach(el => {
+                            el.innerText = currentCount;
+                        });
+
+                        // ✅ Calculate wait time
+                        const waitTime = Math.floor(5 + (currentCount / 10) * 2);
+                        waitTimeEl.innerText = waitTime + ' Mins';
+
+                        // ✅ Update timestamp
+                        const now = new Date();
+                        timestampEl.innerText = now.toLocaleTimeString([], {
+                            hour12: false
+                        });
+
+                        const flowEl = document.getElementById('flow-status');
+
+                        let flowText = "";
+                        let flowColor = "";
+
+                        if (currentCount <= 30) {
+                            flowText = "Low Traffic";
+                            flowColor = "green";
+                        } else if (currentCount <= 60) {
+                            flowText = "Medium Traffic";
+                            flowColor = "orange";
+                        } else {
+                            flowText = "High Traffic";
+                            flowColor = "red";
+                        }
+
+                        flowEl.innerText = flowText;
+                        flowEl.style.color = flowColor;
+
+                        console.log("Live Count:", currentCount);
+
+                    } catch (error) {
+                        console.log("Backend not running...");
+                    }
                 }
 
-                const flowEl = document.getElementById('flow-status');
-                flowEl.innerText = flowText;
-                flowEl.style.color = flowColor;
+                // Run immediately
+                updateLiveStats();
 
-                console.log("Dashboard Updated:", count);
+                // Repeat every 3 sec
+                setInterval(updateLiveStats, 3000);
 
-            } catch (error) {
-                console.error("Backend not running yet", error);
-            }
-        }
-
-        // Run immediately
-        updateDashboard();
-
-        // Repeat every 2 seconds
-        setInterval(updateDashboard, 2000);
-
-        // This function 'asks' the backend for the live crowd count 
-        async function refreshDashboard() {
-            try { // 1. Call the backend 
-                const response = await fetch('http://localhost:5000/api/crowd/live');
-                const data = await response.json();
-                // 2. Update the number on your screen 
-                // Make sure your HTML has an element with 
-                id = "live-crowd-count"
-                document.getElementById('live-crowd-count').innerText = data.count;
-                // 3. Update the Wait Time (2 mins per person) 
-                document.getElementById('average-wait-time').innerText = (data.count * 2) + " Mins";
-            } catch (error) {
-                console.log("Could not connect to backend yet...");
-            }
-        } // Run this every 3 seconds to keep it 'Live' 
-        setInterval(refreshDashboard, 3000);
-
-
-
-
-        // 1. Storage
-        const cart = [];
-
-        // 2. Add Item Function
-        function placeOrder(name, price) {
-            const existing = cart.find(i => i.name === name);
-            if (existing) existing.quantity++;
-            else cart.push({
-                name,
-                price,
-                quantity: 1
             });
+            ////cart pagessssssssssss
+            // 1. Storage
+            const cart = [];
 
-            updateCartUI(); // Instant update
-        }
+            // 2. Add Item Function
+            function placeOrder(name, price) {
+                const existing = cart.find(i => i.name === name);
+                if (existing) existing.quantity++;
+                else cart.push({
+                    name,
+                    price,
+                    quantity: 1
+                });
 
+                updateCartUI(); // Instant update
+            }
 
-        function updateCartUI() {
-            const list = document.getElementById('cart-items');
-            const badge = document.getElementById('cart-count-badge'); // Your top icon badge
-            const trayBadge = document.getElementById('cart-count'); // Your yellow box/tray count
+            // 3. THE UPDATER: Draws the list inside the Drawer
+            function updateCartUI() {
+                const list = document.getElementById('cart-items');
+                const badge = document.getElementById('cart-count-badge');
 
-            // 1. Clear the old list first
-            if (list) list.innerHTML = '';
+                // Clear old list
+                list.innerHTML = '';
 
-            let totalQuantity = 0;
-            let totalPrice = 0;
+                if (cart.length === 0) {
+                    list.innerHTML = '<li class="text-slate-400 italic text-center py-10">Your tray is empty</li>';
+                    if (badge) badge.innerText = "0";
+                    return;
+                }
 
-            // 2. Loop through the cart and calculate
-            cart.forEach(item => {
-                // Draw the item in the list
-                if (list) {
+                let totalItems = 0;
+                cart.forEach(item => {
                     const li = document.createElement('li');
-                    li.className = "flex justify-between p-2 border-b text-sm bg-white rounded-lg mb-2";
+                    li.className = "flex justify-between items-center bg-slate-50 p-3 rounded-xl mb-2";
                     li.innerHTML = `
+            <div class="flex flex-col">
+                <span class="font-bold text-sm text-on-surface">${item.name}</span>
+                <span class="text-xs text-primary font-black">$${(item.price * item.quantity).toFixed(2)}</span>
+            </div>
+            <span class="text-xs font-bold bg-white px-2 py-1 rounded border">x${item.quantity}</span>
+        `;
+                    list.appendChild(li);
+                    totalItems += item.quantity;
+                });
+
+                if (badge) badge.innerText = totalItems;
+            }
+
+
+
+
+            function updateCartUI() {
+                const list = document.getElementById('cart-items');
+                const badge = document.getElementById('cart-count-badge'); // Your top icon badge
+                const trayBadge = document.getElementById('cart-count'); // Your yellow box/tray count
+
+                // 1. Clear the old list first
+                if (list) list.innerHTML = '';
+
+                let totalQuantity = 0;
+                let totalPrice = 0;
+
+                // 2. Loop through the cart and calculate
+                cart.forEach(item => {
+                    // Draw the item in the list
+                    if (list) {
+                        const li = document.createElement('li');
+                        li.className = "flex justify-between p-2 border-b text-sm bg-white rounded-lg mb-2";
+                        li.innerHTML = `
                 <div class="flex flex-col">
                     <span class="font-bold">${item.name}</span>
                     <span class="text-xs text-slate-500">$${item.price.toFixed(2)} x ${item.quantity}</span>
                 </div>
                 <span class="font-black text-primary">$${(item.price * item.quantity).toFixed(2)}</span>
             `;
+                        list.appendChild(li);
+                    }
+
+                    // 🔥 THE MAGIC CALCULATION
+                    totalQuantity += item.quantity;
+                    totalPrice += (item.price * item.quantity);
+                });
+
+                // 3. ✅ UPDATE ALL BADGES WITH THE REAL TOTAL
+                if (badge) badge.innerText = totalQuantity;
+                if (trayBadge) trayBadge.innerText = totalQuantity;
+
+                // Update total price if you have an element for it
+                const totalEl = document.getElementById('cart-total');
+                if (totalEl) totalEl.innerText = "$" + totalPrice.toFixed(2);
+
+                console.log("Cart Updated! Total Qty:", totalQuantity);
+            }
+
+
+
+
+            // 4. THE GENERATOR: Create Student/Order ID
+            function generateID() {
+                // Generates a random 4-digit ID (e.g., STU-4821)
+                return "STU-" + Math.floor(1000 + Math.random() * 9000);
+            }
+
+            // 5. THE CHECKOUT: The final action
+            async function placeFinalOrder() {
+                if (cart.length === 0) return alert("Your tray is empty!");
+
+                const studentID = generateID();
+                const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+                // Prepare the data package
+                const orderPackage = {
+                    id: studentID,
+                    items: cart,
+                    total: totalAmount,
+                    time: new Date().toLocaleTimeString()
+                };
+
+                // 🔥 THE BRIDGE: Send to backend
+                try {
+                    const response = await fetch('http://localhost:5000/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderPackage)
+                    });
+
+                    if (response.ok) {
+                        alert("Success! Your Student ID is: " + studentID);
+                        cart.length = 0; // Clear cart
+                        updateCartUI();
+                        toggleCart(); // Close drawer
+                    }
+                } catch (e) {
+                    alert("Backend not running! Start server.js first.");
+                }
+            }
+
+
+
+
+            ///my order pagessss
+            function goToMyOrder() {
+                document.getElementById("order-view").style.display = "block";
+            }
+
+            function backToMenu() {
+                document.getElementById("order-view").style.display = "none";
+            }
+
+            function showMyOrder() {
+                const list = document.getElementById("order-list");
+                const totalEl = document.getElementById("order-total");
+
+                list.innerHTML = "";
+
+                let total = 0;
+
+                cart.forEach(item => {
+                    const li = document.createElement("li");
+
+                    // ✅ CORRECT WAY
+
+                    li.textContent = `${item.name} x ${item.quantity}`;
+
                     list.appendChild(li);
+
+                    total += item.price * item.quantity;
+                });
+
+                totalEl.textContent = "Total: ₹" + total;
+            }
+
+            function goToMyOrder() {
+                document.getElementById("order-view").style.display = "block";
+
+                showMyOrder(); // 🔥 MUST
+            }
+
+            function placeFinalOrder() {
+                if (cart.length === 0) {
+                    alert("Cart empty!");
+                    return;
                 }
 
-                // 🔥 THE MAGIC CALCULATION
-                totalQuantity += item.quantity;
-                totalPrice += (item.price * item.quantity);
-            });
+                const id = generateID();
 
-            // 3. ✅ UPDATE ALL BADGES WITH THE REAL TOTAL
-            if (badge) badge.innerText = totalQuantity;
-            if (trayBadge) trayBadge.innerText = totalQuantity;
+                document.getElementById("order-id").innerText = "Order ID: " + id;
 
-            // Update total price if you have an element for it
-            const totalEl = document.getElementById('cart-total');
-            if (totalEl) totalEl.innerText = "$" + totalPrice.toFixed(2);
+                alert("Order placed successfully 😎");
 
-            console.log("Cart Updated! Total Qty:", totalQuantity);
-        }
+                cart.length = 0;
+                showMyOrder();
+            }
 
 
 
-        function updateCartUI() {
-            // ... loop and math logic here ...
+            ///history of the ordersssssss
+            async function showHistory() {
+                const list = document.getElementById('history-list');
+                list.innerHTML = '<li style="text-align:center; font-style:italic;">Loading...</li>';
 
-            // 🔥 THE UPDATE
-            document.getElementById('cart-count').innerText = totalQuantity;
+                try {
+                    // 1. Fetch data from backend memory
+                    const res = await fetch('http://localhost:5000/api/orders/history');
+                    const history = await res.json();
 
-            // If you have another badge on the icon:
-            const iconBadge = document.getElementById('cart-count-badge');
-            if (iconBadge) iconBadge.innerText = totalQuantity;
-        }
+                    list.innerHTML = ''; // Clear loading text
 
+                    if (history.length === 0) {
+                        list.innerHTML = '<li style="text-align:center; color:#94a3b8;">No past orders yet.</li>';
+                        return;
+                    }
 
+                    // 2. Loop through the list and draw it
+                    history.forEach(order => {
+                        const li = document.createElement('li');
+                        li.style.background = "#f8fafc";
+                        li.style.padding = "12px";
+                        li.style.borderRadius = "10px";
+                        li.style.marginBottom = "10px";
+                        li.style.border = "1px solid #e2e8f0";
 
+                        li.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-size:12px;">
+                    <b>${order.id}</b>
+                    <span style="color:#94a3b8;">${order.date}</span>
+                </div>
+                <p style="font-size:13px; margin:5px 0;">Items: ${order.items.length}</p>
+                <p style="font-size:14px; font-weight:900; color:#005c72;">$${order.total.toFixed(2)}</p>
+            `;
+                        list.appendChild(li);
+                    });
 
-        // 4. THE GENERATOR: Create Student/Order ID
-        function generateID() {
-            // Generates a random 4-digit ID (e.g., STU-4821)
-            return "STU-" + Math.floor(1000 + Math.random() * 9000);
-        }
+                } catch (e) {
+                    list.innerHTML = '<li style="color:red; text-align:center;">Backend Error!</li>';
+                }
+            }
 
-        // 5. THE CHECKOUT: The final action
-        async function placeFinalOrder() {
-            if (cart.length === 0) return alert("Your tray is empty!");
-
-            const studentID = generateID();
-            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-            // Prepare the data package
-            const orderPackage = {
-                id: studentID,
-                items: cart,
-                total: totalAmount,
-                time: new Date().toLocaleTimeString()
-            };
-
-            // 🔥 THE BRIDGE: Send to backend
-            try {
-                const response = await fetch('http://localhost:5000/api/orders', {
+            ///admin kaagaaaa
+            async function updateOrderStatus(orderID, newStatus) {
+                // Example statuses: 'Cooking', 'Ready', 'Completed'
+                await fetch('http://localhost:5000/api/orders/status/update', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(orderPackage)
+                    body: JSON.stringify({
+                        id: orderID,
+                        status: newStatus
+                    })
+                });
+                alert("Student notified! Order is now " + newStatus);
+
+
+                // Inside your sync script
+                if (currentCount > 50) {
+                    document.getElementById('admin-alert-box').innerHTML = `
+        <div class="bg-red-500 text-white p-4 rounded-xl animate-pulse">
+            🚨 CRITICAL CROWD DETECTED: ${currentCount} People
+        </div>
+    `;
+                }
+            }
+            // 1. Password Verification & Toggle
+            function toggleAdminView() {
+                let pin = prompt("Enter Manager PIN:");
+                if (pin === "1234") { // Your secret code
+                    // Hide Student Menu
+                    document.getElementById('dashboard').classList.add('hidden');
+                    document.getElementById('menu').classList.add('hidden');
+
+                    // Show Admin Table
+                    document.getElementById('admin-dashboard-section').classList.remove('hidden');
+
+                    // Load real data from backend
+                    fetchAdminData();
+                } else {
+                    alert("Access Denied!");
+                }
+            }
+
+            // 2. Fetch and Fill Table
+            async function fetchAdminData() {
+                const tableBody = document.getElementById('admin-order-rows');
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Loading data...</td></tr>';
+
+                try {
+                    const res = await fetch('http://localhost:5000/api/orders/history');
+                    const orders = await res.json();
+
+                    tableBody.innerHTML = ''; // Clear loading text
+
+                    orders.forEach(order => {
+                        const row = document.createElement('tr');
+                        row.style.borderTop = "1px solid #f1f5f9";
+                        row.style.fontSize = "13px";
+
+                        row.innerHTML = `
+                <td style="padding:15px; font-weight:bold; color:#004354;">${order.id}</td>
+                <td style="padding:15px; color:#64748b;">${order.studentId || 'STU-Guest'}</td>
+                <td style="padding:15px;">${order.items.length} Items</td>
+                <td style="padding:15px; font-weight:900;">$${order.total.toFixed(2)}</td>
+                <td style="padding:15px;">
+                    <span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:20px; font-size:10px; font-weight:bold;">RECEIVED</span>
+                </td>
+            `;
+                        tableBody.appendChild(row);
+                    });
+                } catch (e) {
+                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">Backend Offline!</td></tr>';
+                }
+            }
+
+            function checkAdminAccess() {
+                // 1. User enter panna PIN-a edukkurom
+                const enteredPIN = document.getElementById('admin-password-input').value;
+
+                // 2. Namma secret PIN
+                const secretPIN = "1234";
+
+                // 3. Comparison
+                if (enteredPIN === secretPIN) {
+                    alert("Login Success! Redirecting to Manager Dashboard...");
+
+                    // 🔥 THE KEY: This opens your admin.html file
+                    // Make sure 'admin.html' is in the same folder as index.html
+                    window.location.href = "admin.html";
+
+                } else {
+                    alert("Wrong PIN! Access Denied.");
+                }
+            }
+
+            function checkAdminAccess() {
+                // 1. User enter panna PIN-a edukkurom
+                const enteredPIN = document.getElementById('admin-password-input').value;
+
+                // 2. Namma secret PIN
+                const secretPIN = "1234";
+
+                // 3. Comparison
+                if (enteredPIN === secretPIN) {
+                    alert("Login Success! Redirecting to Manager Dashboard...");
+
+                    // 🔥 THE KEY: This opens your admin.html file
+                    // Make sure 'admin.html' is in the same folder as index.html
+                    window.location.href = "admin.html";
+
+                } else {
+                    alert("Wrong PIN! Access Denied.");
+                }
+            }
+            ///loin page openn panna
+            function openStudentLogin() {
+                // 🔥 THE MAGIC LINE: This opens your login page
+                // Make sure your login file is named exactly 'login.html'
+                window.location.href = "login.html";
+            }
+
+            async function showHistory() {
+                const list = document.getElementById('history-list');
+                list.innerHTML = '<li style="text-align:center; padding:20px;">Loading history...</li>';
+
+                try {
+                    // 1. Fetch data from backend
+                    // Make sure your backend address is correct!
+                    const res = await fetch('http://localhost:5000/api/orders/history');
+                    const history = await res.json();
+
+                    list.innerHTML = ''; // Clear loading text
+
+                    if (history.length === 0) {
+                        list.innerHTML = '<li style="text-align:center; color:#94a3b8; padding:20px;">No past orders found.</li>';
+                        return;
+                    }
+
+                    // 2. Loop through history and DRAW it on screen
+                    history.forEach(order => {
+                        const li = document.createElement('li');
+                        li.style.background = "#f8fafc";
+                        li.style.padding = "15px";
+                        li.style.borderRadius = "12px";
+                        li.style.marginBottom = "10px";
+                        li.style.border = "1px solid #e2e8f0";
+
+                        li.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <b style="color:#004354;">${order.id}</b>
+                    <span style="font-size:10px; color:#94a3b8;">${order.date}</span>
+                </div>
+                <p style="font-size:12px; margin:5px 0;">Items: ${order.items.length}</p>
+                <p style="font-size:14px; font-weight:900; color:#005c72;">Total: $${order.total.toFixed(2)}</p>
+            `;
+                        list.appendChild(li);
+                    });
+
+                } catch (e) {
+                    list.innerHTML = '<li style="color:red; text-align:center; padding:20px;">Backend Offline! Is server.js running?</li>';
+                }
+            }
+
+            async function placeFinalOrder() {
+                const orderData = {
+                    items: cart, // Unga cart array
+                    total: cart.reduce((sum, i) => sum + (i.price * i.quantity), 0)
+                };
+
+                // Send to backend
+                const res = await fetch('http://localhost:5000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
                 });
 
-                if (response.ok) {
-                    alert("Success! Your Student ID is: " + studentID);
-                    cart.length = 0; // Clear cart
+                if (res.ok) {
+                    alert("Order Placed Successfully!");
+                    cart.length = 0; // Clear local cart
                     updateCartUI();
-                    toggleCart(); // Close drawer
                 }
-            } catch (e) {
-                alert("Backend not running! Start server.js first.");
             }
-        }
 
-        function checkAdminAccess() {
-            // 1. User enter panna PIN-a edukkurom
-            const enteredPIN = document.getElementById('admin-password-input').value;
 
-            // 2. Namma secret PIN
-            const secretPIN = "1234";
+            async function placeFinalOrder() {
+                // 1. Generate unique random ID first
+                const generatedID = "ORD-" + Math.floor(1000 + Math.random() * 9000);
 
-            // 3. Comparison
-            if (enteredPIN === secretPIN) {
-                alert("Login Success! Redirecting to Manager Dashboard...");
+                // 2. Prepare the data package (THE BRIDGE)
+                const orderData = {
+                    id: generatedID, // 👈 THIS IS KEY: Send the ID to the server
+                    items: cart,
+                    total: calculateTotal()
+                };
 
-                // 🔥 THE KEY: This opens your admin.html file
-                // Make sure 'admin.html' is in the same folder as index.html
-                window.location.href = "admin.html";
+                // 3. Send to Backend
+                await fetch('http://localhost:5000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData) // 👈 Entire package including ID sent!
+                });
 
-            } else {
-                alert("Wrong PIN! Access Denied.");
+                // This is for your screen alert
+                alert("Order Success! ID: " + generatedID);
             }
-        }
 
-        function checkAdminAccess() {
-            // 1. User enter panna PIN-a edukkurom
-            const enteredPIN = document.getElementById('admin-password-input').value;
+            async function placeFinalOrder() {
+                // 1. Check if cart has items
+                if (cart.length === 0) {
+                    alert("Your tray is empty! Add some food first.");
+                    return;
+                }
 
-            // 2. Namma secret PIN
-            const secretPIN = "1234";
+                // 2. Generate unique Order ID
+                const generatedID = "ORD-" + Math.floor(1000 + Math.random() * 9000);
 
-            // 3. Comparison
-            if (enteredPIN === secretPIN) {
-                alert("Login Success! Redirecting to Manager Dashboard...");
+                // 3. Prepare the package (Labels must match backend)
+                const orderData = {
+                    id: generatedID,
+                    studentId: localStorage.getItem('loggedStudentID') || 'Guest',
+                    items: cart,
+                    total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                    time: new Date().toLocaleTimeString()
+                };
 
-                // 🔥 THE KEY: This opens your admin.html file
-                // Make sure 'admin.html' is in the same folder as index.html
-                window.location.href = "admin.html";
+                try {
+                    // 🔥 THE BRIDGE: Sending to Backend
+                    const response = await fetch('http://localhost:5000/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(orderData)
+                    });
 
-            } else {
-                alert("Wrong PIN! Access Denied.");
+                    // 4. Handle the Result
+                    if (response.ok) {
+                        // ✅ THE MAGIC FIX: Show the ID on screen
+                        const idDisplay = document.getElementById('order-id');
+                        if (idDisplay) idDisplay.innerText = "Order Success! Your ID: " + generatedID;
+
+                        alert("Success! Your order is placed.");
+
+                        // Clear local cart after success
+                        cart.length = 0;
+                        if (typeof updateCartUI === 'function') updateCartUI();
+
+                    } else {
+                        alert("Backend Error! Please check your server console.");
+                    }
+                } catch (e) {
+                    alert("Server is OFF! VS Code terminal-la 'node server.js' run pannunga.");
+                }
             }
-        }
 
-        async function placeFinalOrder() {
-            const orderID = "ORD-" + Math.floor(Math.random() * 9000); // 👈 ID generate panrom
+            async function handleLogin() {
+                // 1. IDs moolama values-a edukkurom
+                const studentID = document.getElementById('student-id').value;
+                const studentPIN = document.getElementById('login-pin').value;
 
-            const orderData = {
-                id: orderID, // 👈 ID-ah package kulla vaikkurom
-                items: cart,
-                total: totalAmount
-            };
+                // 2. Empty check
+                if (studentID === "" || studentPIN === "") {
+                    alert("Please enter both ID and PIN!");
+                    return;
+                }
 
-            // Sending to Backend
-            await fetch('http://localhost:5000/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderData) // 👈 Package-ah anuppurom
-            });
-        }
-    </script>
+                // 3. 🔥 THE SYNC: Tell the terminal about this login
+                try {
+                    await fetch('http://localhost:5000/api/auth/login-track', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                                id: studentID
+                            }) // Sending the ID
+                    });
 
+                    console.log("Terminal sync successful for:", studentID);
+
+                    // 4. Redirect to main page
+                    alert("Welcome, " + studentID + "!");
+                    window.location.href = "as.html";
+
+                } catch (e) {
+                    console.log("Backend offline, but logging in locally...");
+                    window.location.href = "as.html";
+                }
+            }
+
+
+
+            async function fetchIntegratedHistory() {
+                // 1. Target the list where orders will show
+                const list = document.getElementById('integrated-history-list');
+                if (!list) return;
+
+                list.innerHTML = '<li style="text-align:center; padding:10px; font-size:12px; color:#94a3b8;">Fetching records...</li>';
+
+                try {
+                    // 🔥 THE BRIDGE: Address must match your server port
+                    const response = await fetch('http://localhost:5000/api/orders/history');
+
+                    if (!response.ok) throw new Error("Server Error");
+
+                    const history = await response.json();
+
+                    list.innerHTML = ''; // Clear loading text
+
+                    if (history.length === 0) {
+                        list.innerHTML = '<li style="text-align:center; padding:10px; font-size:12px; color:#94a3b8;">No past orders found.</li>';
+                        return;
+                    }
+
+                    // 2. 🔥 THE LOOP: Drawing each order magic-ah
+                    // newest first-ku reverse() use panrom
+                    history.reverse().forEach(order => {
+                        const li = document.createElement('li');
+                        li.style.background = "#fff";
+                        li.style.border = "1px solid #f1f5f9";
+                        li.style.padding = "10px";
+                        li.style.borderRadius = "10px";
+                        li.style.marginBottom = "8px";
+                        li.style.listStyle = "none";
+
+                        li.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;">
+                    <span style="color:#005c72;">${order.id || 'ORD-0000'}</span>
+                    <span>$${parseFloat(order.total || 0).toFixed(2)}</span>
+                </div>
+                <div style="color:#64748b; font-size:10px; margin-top:2px;">
+                    ${order.date || 'Today'} • ${order.items ? order.items.length : 0} items
+                </div>
+            `;
+                        list.appendChild(li);
+                    });
+
+                } catch (e) {
+                    // Success: This handles the "Offline" doubt
+                    list.innerHTML = '<li style="color:red; text-align:center; font-size:12px; padding:10px;">Backend Offline! Is server.js running?</li>';
+                }
+            }
+
+            async function updateOccupancyAnalytics() {
+                try {
+                    // 1. Fetch live count from backend
+                    const response = await fetch('http://localhost:5000/api/crowd/live');
+                    const data = await response.json();
+                    const currentCount = data.count;
+
+                    // 2. Update Capacity Text
+                    // Make sure your HTML has id="capacity-val"
+                    const maxCapacity = 100; // Unga canteen size
+                    const capacityPercent = Math.min(100, Math.round((currentCount / maxCapacity) * 100));
+
+                    const capEl = document.getElementById('capacity-val');
+                    if (capEl) capEl.innerText = capacityPercent + "%";
+
+                    // 3. Update Wait Time Text
+                    const waitTime = Math.round(currentCount * 1.5);
+                    const waitEl = document.getElementById('wait-time-val');
+                    if (waitEl) waitEl.innerText = waitTime + " Mins";
+
+                    // 4. Update Graph Bars (Visual Magic)
+                    // Ovvoru bar-kum oru class kuduthu height-a mathuvom
+                    const activeBar = document.querySelector('.current-load-bar');
+                    if (activeBar) {
+                        activeBar.style.height = capacityPercent + "%";
+                    }
+
+                } catch (e) {
+                    console.log("Analytics Sync: Waiting for server...");
+                }
+            }
+
+            // Every 5 seconds-ku update aaganum
+            setInterval(updateOccupancyAnalytics, 5000);
+
+            function toggleAdminLogin(show) {
+                const modal = document.getElementById('admin-login-view');
+                if (show) {
+                    modal.classList.remove('hidden');
+                } else {
+                    modal.classList.add('hidden');
+                }
+            }
+
+            // 2. Function to handle the actual login
+            function handleAdminLogin() {
+                const id = document.getElementById('admin-id-input').value;
+                const pin = document.getElementById('admin-pin-input').value;
+
+                // Standard PIN check
+                if (pin === "1234") {
+                    alert("Access Granted! Opening Manager Dashboard...");
+
+                    // 🔥 THE KEY: Hide Login Modal & Open admin.html
+                    toggleAdminLogin(false);
+                    window.location.href = "admin.html";
+                } else {
+                    alert("Incorrect Credentials. Please try again.");
+                }
+            }
+
+            async function updateTrackingAndHistory() {
+                try {
+                    // 🔥 THE BACKEND CALL
+                    const response = await fetch('http://localhost:5000/api/sync/all');
+                    const data = await response.json();
+
+                    // --- PART A: Update Tracking UI (The Stepper) ---
+                    // 'data.status' check panni icons-a highlight panrom
+                    resetAllTrackingIcons(); // Clear old blue colors
+
+                    if (data.status === 'Cooking') {
+                        document.getElementById('step-received').classList.add('bg-primary');
+                        document.getElementById('step-cooking').classList.add('bg-primary');
+                    }
+
+                    // --- PART B: Update History UI (The List) ---
+                    const list = document.getElementById('integrated-history-list');
+                    if (!list) return;
+
+                    list.innerHTML = ''; // Clear old items
+
+                    if (data.orders.length === 0) {
+                        list.innerHTML = '<li class="text-center py-4 text-slate-400 italic">No history yet</li>';
+                        return;
+                    }
+
+                    // DRAW EACH ORDER
+                    data.orders.reverse().forEach(order => {
+                        const li = document.createElement('li');
+                        li.className = "p-3 bg-slate-50 rounded-xl mb-2 flex justify-between";
+                        li.innerHTML = `
+                <div>
+                    <p class="font-bold text-xs text-primary">${order.id}</p>
+                    <p class="text-[10px] text-slate-400">${order.time || 'Today'}</p>
+                </div>
+                <p class="font-black text-sm">$${parseFloat(order.total).toFixed(2)}</p>
+            `;
+                        list.appendChild(li);
+                    });
+
+                } catch (e) {
+                    console.log("Waiting for backend sync...");
+                }
+            }
+
+            // ⏱ RUN EVERY 5 SECONDS (Automatic Refresh)
+            setInterval(updateTrackingAndHistory, 5000);
+
+            async function showHistory() {
+                const list = document.getElementById('history-list');
+                list.innerHTML = '<li>Loading...</li>';
+
+                try {
+                    // 🔥 THE CALL: Address match aaganum (Port 5000)
+                    const response = await fetch('http://localhost:5000/api/orders/history');
+                    const history = await response.json();
+
+                    list.innerHTML = ''; // Clear loading text
+
+                    if (history.length === 0) {
+                        list.innerHTML = '<li style="text-align:center; padding:20px; color:#94a3b8;">No orders placed yet.</li>';
+                        return;
+                    }
+
+                    // 2. DRAW EACH ORDER
+                    history.reverse().forEach(order => {
+                        const li = document.createElement('li');
+                        li.style.background = "#f8fafc";
+                        li.style.padding = "12px";
+                        li.style.borderRadius = "10px";
+                        li.style.marginBottom = "8px";
+                        li.style.border = "1px solid #e2e8f0";
+
+                        li.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-size:12px;">
+                    <b>${order.id}</b>
+                    <span style="color:#94a3b8;">$${parseFloat(order.total).toFixed(2)}</span>
+                </div>
+            `;
+                        list.appendChild(li);
+                    });
+
+                } catch (e) {
+                    list.innerHTML = '<li style="color:red; text-align:center; padding:10px;">Backend Offline! Is server.js running?</li>';
+                }
+            }
+
+            async function fetchIntegratedHistory() {
+                // 1. Target the list where orders will show
+                const list = document.getElementById('integrated-history-list');
+                if (!list) return;
+
+                list.innerHTML = '<li>Loading...</li>';
+
+                try {
+                    // 🔥 ADDRESS CHECK: Port 5000 and the route must match server.js
+                    const response = await fetch('http://localhost:5000/api/orders/history');
+
+                    if (!response.ok) throw new Error("Backend Error");
+
+                    const history = await response.json();
+
+                    list.innerHTML = ''; // Clear loading text
+
+                    if (history.length === 0) {
+                        list.innerHTML = '<li style="text-align:center; padding:10px; font-size:12px; color:#94a3b8;">No past orders found.</li>';
+                        return;
+                    }
+
+                    // 2. 🔥 THE LOOP: Drawing each order magic-ah
+                    // newest first-ku reverse() use panrom
+                    history.reverse().forEach(order => {
+                        const li = document.createElement('li');
+                        li.style.background = "#fff";
+                        li.style.border = "1px solid #f1f5f9";
+                        li.style.padding = "10px";
+                        li.style.borderRadius = "10px";
+                        li.style.marginBottom = "8px";
+                        li.style.listStyle = "none";
+
+                        li.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;">
+                    <span style="color:#005c72;">${order.id || 'ORD-0000'}</span>
+                    <span>$${parseFloat(order.total || 0).toFixed(2)}</span>
+                </div>
+                <div style="color:#64748b; font-size:10px; margin-top:2px;">
+                    ${order.date || 'Today'} • ${order.items ? order.items.length : 0} items
+                </div>
+            `;
+                        list.appendChild(li);
+                    });
+
+                } catch (e) {
+                    console.log("Backend Offline! Is server.js running?");
+                    list.innerHTML = '<li style="color:red; text-align:center; font-size:12px; padding:10px;">Backend Offline!</li>';
+                }
+            }
+        </script>
 </body>
 
 </html>
