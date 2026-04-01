@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | Smart Canteen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+
+    <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm">
+        <h2 class="text-2xl font-black text-cyan-900 mb-6 text-center tracking-tight">Smart Canteen</h2>
+
+        <div class="space-y-4">
+            <!-- Student ID Input -->
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">Student ID</label>
+                <input type="text" id="stu-id" placeholder="STU-0000" class="w-full p-4 bg-slate-50 border rounded-xl focus:ring-2 ring-cyan-700 outline-none mt-1">
+            </div>
+
+            <!-- PIN Input -->
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase tracking-widest">4-Digit PIN</label>
+                <input type="password" id="stu-pin" maxlength="4" placeholder="••••" class="w-full p-4 bg-slate-50 border rounded-xl focus:ring-2 ring-cyan-700 outline-none mt-1">
+            </div>
+
+            <!-- LOGIN BUTTON -->
+            <button onclick="handleLogin()" class="w-full py-4 bg-cyan-900 text-white rounded-xl font-bold hover:shadow-lg transition-all active:scale-95">
+                Login to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const id = document.getElementById('stu-id').value;
+            const pin = document.getElementById('stu-pin').value;
+
+            // 💡 Level 0 Security: Match check
+            if (id !== "" && pin === "1234") {
+                alert("Login Success! Opening Canteen...");
+
+                // 🔥 THE REDIRECT: Opens your main dashboard
+                // Make sure your main file is named 'index.html'
+                window.location.href = "fg.html";
+            } else {
+                alert("Wrong PIN! Try '1234'");
+            }
+        }
+
+        async function handleLogin() {
+            // 1. Target IDs (id="stu-id" and id="stu-pin" sariya irukkanum)
+            const id = document.getElementById('stu-id').value;
+            const pin = document.getElementById('stu-pin').value;
+
+            if (id !== "" && pin === "1234") {
+
+                // 🔥 THE BRIDGE: Tell the terminal about this login BEFORE the alert
+                try {
+                    const response = await fetch('http://localhost:5000/api/auth/login-track', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                                id: id
+                            }) // Sending the ID to backend
+                    });
+
+                    if (response.ok) {
+                        console.log("✅ Terminal sync successful for:", id);
+                    }
+                } catch (e) {
+                    console.log("Terminal sync failed! Is server.js running?");
+                }
+
+                // 2. Visual Success (The Popup)
+                alert("Login Success! Welcome " + id);
+
+                // 3. Save to memory and Redirect
+                localStorage.setItem('loggedStudentID', id);
+                window.location.href = "fg.html";
+
+            } else {
+                alert("Wrong PIN! Try '1234'");
+            }
+        }
+    </script>
+</body>
+
+</html>

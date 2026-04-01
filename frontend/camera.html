@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Camera Monitor</title>
+
+    <!-- TensorFlow -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <!-- COCO SSD Model -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+
+<body>
+
+    <h1>📷 AI Crowd Monitor</h1>
+    <h2 id="count">Detecting...</h2>
+
+    <video id="webcam" autoplay muted width="640" height="480"></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let lastSentCount = -1;
+
+        // ✅ Start camera
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true
+                });
+                video.srcObject = stream;
+
+                return new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        resolve(video);
+                    };
+                });
+            } catch (error) {
+                alert("Camera access denied ❌");
+                console.error(error);
+            }
+        }
+
+        // ✅ Send data to backend (FIXED)
+        async function sendCountToBackend(count) {
+            if (count === lastSentCount) return; // avoid duplicate
+
+            lastSentCount = count;
+
+            try {
+                await fetch('http://localhost:5000/api/crowd/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        count: count
+                    })
+                });
+
+                console.log("✅ Sent:", count);
+            } catch (error) {
+                console.error("❌ Backend error:", error);
+            }
+        }
+
+        // ✅ Main detection
+        async function runDetection() {
+            const model = await cocoSsd.load();
+            console.log("Model Loaded ✅");
+
+            setInterval(async() => {
+                const predictions = await model.detect(video);
+
+                let peopleCount = 0;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                predictions.forEach(prediction => {
+                    if (prediction.class === "person") {
+                        peopleCount++;
+
+                        const [x, y, width, height] = prediction.bbox;
+
+                        ctx.strokeStyle = "red";
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(x, y, width, height);
+
+                        ctx.fillStyle = "red";
+                        ctx.fillText("Person", x, y > 10 ? y - 5 : 10);
+                    }
+                });
+
+                // ✅ Update UI
+                document.getElementById("count").innerText =
+                    peopleCount + " People Detected";
+
+                console.log("People Count:", peopleCount);
+
+                // ✅ IMPORTANT FIX (use function)
+                sendCountToBackend(peopleCount);
+
+            }, 2000);
+        }
+
+        // ✅ Start app
+        setupCamera().then(runDetection);
+    </script>
+
+</body>
+
+</html>
